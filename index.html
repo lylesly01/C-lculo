@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Solucionador de Desigualdades</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.0/math.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f2f2f2; }
+    input, button { padding: 10px; font-size: 16px; }
+    #resultado { margin-top: 20px; font-size: 18px; }
+  </style>
+</head>
+<body>
+  <h2>Solucionador de Desigualdades Lineales y Cuadráticas</h2>
+  <p>Ejemplos: <code>2x + 3 &gt; 5</code>, <code>x^2 - 4 &lt;= 0</code></p>
+  <input type="text" id="desigualdad" placeholder="Escribe una desigualdad" size="40">
+  <button onclick="resolver()">Resolver</button>
+  
+  <div id="resultado"></div>
+
+  <script>
+    function resolver() {
+      const input = document.getElementById('desigualdad').value;
+      const resultado = document.getElementById('resultado');
+
+      // Separar en lados y operador
+      const operadores = ['<=', '>=', '<', '>'];
+      let op = operadores.find(o => input.includes(o));
+      if (!op) {
+        resultado.innerHTML = "❌ Error: No se detectó un operador de desigualdad válido.";
+        return;
+      }
+
+      const [izq, der] = input.split(op).map(x => x.trim());
+      const expr = `(${izq}) - (${der})`;
+
+      try {
+        // Construir función
+        const f = math.compile(expr);
+        const signos = { '<': -1, '<=': 0, '>=': 0, '>': 1 };
+
+        // Buscar raíces aproximadas en un rango
+        let soluciones = [];
+        for (let x = -100; x <= 100; x += 0.5) {
+          const y1 = f.evaluate({ x });
+          const y2 = f.evaluate({ x: x + 0.5 });
+          if ((y1 * y2 <= 0)) {
+            const punto = (x + x + 0.5) / 2;
+            if (!soluciones.some(s => Math.abs(s - punto) < 0.5)) {
+              soluciones.push(Number(punto.toFixed(2)));
+            }
+          }
+        }
+
+        soluciones.sort((a, b) => a - b);
+        let mensaje = `🔍 Aproximación de raíces: [${soluciones.join(', ')}]<br><br>`;
+
+        // Evaluar intervalo de verdad
+        mensaje += `✅ Zonas donde se cumple la desigualdad:<br>`;
+        let cumple = [];
+        for (let x = -100; x <= 100; x += 1) {
+          const y = f.evaluate({ x });
+          if ((op === '<' && y < 0) || (op === '<=' && y <= 0) ||
+              (op === '>' && y > 0) || (op === '>=' && y >= 0)) {
+            cumple.push(x);
+          }
+        }
+
+        if (cumple.length === 0) {
+          mensaje += "No hay valores que cumplan la desigualdad en el rango -100 a 100.";
+        } else {
+          let inicio = cumple[0];
+          let intervalos = [];
+          for (let i = 1; i < cumple.length; i++) {
+            if (cumple[i] !== cumple[i - 1] + 1) {
+              intervalos.push(`[${inicio}, ${cumple[i - 1]}]`);
+              inicio = cumple[i];
+            }
+          }
+          intervalos.push(`[${inicio}, ${cumple[cumple.length - 1]}]`);
+          mensaje += intervalos.join(" ∪ ");
+        }
+
+        resultado.innerHTML = mensaje;
+      } catch (error) {
+        resultado.innerHTML = "❌ Error al procesar la expresión.";
+      }
+    }
+  </script>
+</body>
+</html>
