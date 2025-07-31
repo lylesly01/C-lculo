@@ -2,116 +2,51 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Desigualdades Lineales y Cuadráticas</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.0/math.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f2f2f2; padding: 20px; }
-    input, button { padding: 10px; font-size: 16px; }
-    #resultado { margin-top: 20px; font-size: 18px; }
-    canvas { background: white; border: 1px solid #ccc; margin-top: 20px; }
-  </style>
+  <title>Calculadora de Derivadas paso a paso</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.0.0.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
 </head>
 <body>
-  <h2>🔍 Solucionador de Desigualdades Lineales y Cuadráticas</h2>
-  <p>Ejemplo: <code>x^2 - 4 &lt;= 0</code>, <code>2x + 1 &gt; 5</code></p>
-  <input type="text" id="desigualdad" placeholder="Escribe una desigualdad" size="40">
-  <button onclick="resolver()">Resolver</button>
+  <h1>Derivadora Interactiva</h1>
+  <div>
+    <label for="expr">Función f(x): </label>
+    <input type="text" id="expr" value="sin(x) * x^2">
+    <button onclick="compute()">Calcular</button>
+  </div>
+  <div id="steps"></div>
+  <div id="equations"></div>
+  <div id="plot" style="width:600px;height:400px;"></div>
 
-  <div id="resultado"></div>
-  <canvas id="grafico" width="800" height="400"></canvas>
+<script>
+// Computa derivada y gráfica
+function compute() {
+  const expr = document.getElementById('expr').value;
+  const deriv = math.derivative(expr, 'x');
+  const derivStr = deriv.toString();
 
-  <script>
-    let chart;
+  // Mostrar fórmulas con KaTeX
+  document.getElementById('equations').innerHTML =
+    katex.renderToString(`f(x) = ${math.parse(expr).toTex()}`, {throwOnError:false})
+    + '<br>' +
+    katex.renderToString(`f'(x) = ${math.parse(derivStr).toTex()}`, {throwOnError:false});
 
-    function resolver() {
-      const input = document.getElementById('desigualdad').value;
-      const resultado = document.getElementById('resultado');
-      const operadores = ['<=', '>=', '<', '>'];
-      let op = operadores.find(o => input.includes(o));
+  // Mostrar pasos simples (reglas aplicadas)
+  document.getElementById('steps').innerHTML = `<p>Derivación de <strong>${expr}</strong> respecto a x: <code>${derivStr}</code></p>`;
 
-      if (!op) {
-        resultado.innerHTML = "❌ Error: Desigualdad inválida.";
-        return;
-      }
+  // Generar datos para graficar
+  const f = math.compile(expr);
+  const fd = math.compile(derivStr);
+  const xVals = math.range(-10, 10, 0.5).toArray();
+  const yVals = xVals.map(x => f.evaluate({x}));
+  const dy = xVals.map(x => fd.evaluate({x}));
 
-      const [izq, der] = input.split(op).map(e => e.trim());
-      const expr = `(${izq}) - (${der})`;
-
-      try {
-        const f = math.compile(expr);
-        let x_vals = [], y_vals = [], cumple = [];
-        for (let x = -10; x <= 10; x += 0.1) {
-          const y = f.evaluate({ x });
-          x_vals.push(x);
-          y_vals.push(y);
-
-          if ((op === '<' && y < 0) || (op === '<=' && y <= 0) ||
-              (op === '>' && y > 0) || (op === '>=' && y >= 0)) {
-            cumple.push(x);
-          }
-        }
-
-        // Detectar intervalos donde se cumple la desigualdad
-        let intervalos = [];
-        let i = 0;
-        while (i < cumple.length) {
-          let inicio = cumple[i];
-          while (i + 1 < cumple.length && Math.abs(cumple[i + 1] - cumple[i]) < 0.15) {
-            i++;
-          }
-          let fin = cumple[i];
-          intervalos.push(`[${inicio.toFixed(2)}, ${fin.toFixed(2)}]`);
-          i++;
-        }
-
-        resultado.innerHTML = `
-          ✅ Intervalos donde se cumple la desigualdad:<br>
-          <strong>${intervalos.join(' ∪ ')}</strong>
-        `;
-
-        // Mostrar gráfico
-        if (chart) chart.destroy();
-        const ctx = document.getElementById('grafico').getContext('2d');
-        chart = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: x_vals,
-            datasets: [{
-              label: `f(x) = ${izq} - (${der})`,
-              data: y_vals,
-              borderColor: 'blue',
-              fill: false,
-              pointRadius: 0
-            }, {
-              label: 'f(x) = 0',
-              data: x_vals.map(() => 0),
-              borderColor: 'red',
-              borderDash: [5, 5],
-              fill: false,
-              pointRadius: 0
-            }]
-          },
-          options: {
-            scales: {
-              x: { title: { display: true, text: 'x' } },
-              y: { title: { display: true, text: 'f(x)' }, beginAtZero: false }
-            },
-            plugins: {
-              title: {
-                display: true,
-                text: 'Gráfico de la función asociada a la desigualdad'
-              },
-              legend: {
-                position: 'bottom'
-              }
-            }
-          }
-        });
-      } catch (err) {
-        resultado.innerHTML = "❌ Error al procesar la expresión.";
-      }
-    }
-  </script>
+  Plotly.newPlot('plot', [
+    {x: xVals, y: yVals, name:'f(x)', mode:'lines'},
+    {x: xVals, y: dy, name:"f'(x)", mode:'lines'}
+  ], {title: 'Función y su derivada'});
+}
+</script>
 </body>
 </html>
