@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Derivadas paso a paso + Gráfica</title>
+  <title>Derivadas con pasos + Gráfica</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.1/math.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
@@ -17,47 +17,54 @@
     .paso { background-color: #f0f4f8; padding: 15px; border-left: 5px solid #2980b9;
             margin-top: 15px; border-radius: 6px; }
     .error { color: red; }
-    canvas { margin-top: 30px; }
+    canvas { margin-top: 30px; max-width: 100%; }
   </style>
 </head>
 <body>
   <div class="contenedor">
-    <h1>Derivada por la definición + Gráfica</h1>
-    <p>Escribe la función <strong>f(x)</strong> (ej: <code>x^2 + 3x</code>):</p>
-    <input type="text" id="funcion" placeholder="Ejemplo: x^2 + 3x">
-    <button onclick="calcularDerivada()">Resolver</button>
+    <h1>Derivada paso a paso + Gráfica</h1>
+    <p>Ingresa una función en <strong>f(x)</strong> (ej: <code>x^3 + 5x</code>):</p>
+    <input type="text" id="funcion" placeholder="Ejemplo: x^3 + 5x">
+    <button onclick="calcular()">Calcular</button>
     <div id="resultado"></div>
     <canvas id="grafica" width="600" height="400"></canvas>
   </div>
 
   <script>
-    function calcularDerivada() {
-      const entrada = document.getElementById("funcion").value.trim();
-      const resultado = document.getElementById("resultado");
-      resultado.innerHTML = "";
-      const ctx = document.getElementById("grafica").getContext("2d");
+    function calcular() {
+      const expr = document.getElementById('funcion').value.trim();
+      const out = document.getElementById('resultado');
+      out.innerHTML = '';
+      const ctx = document.getElementById('grafica').getContext('2d');
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-      if (!entrada) {
-        resultado.innerHTML = '<div class="paso error">⚠️ Ingresa una función válida.</div>';
+      if (!expr) {
+        out.innerHTML = '<div class="paso error">⚠️ Por favor ingresa una función válida.</div>';
         return;
       }
 
       try {
-        const fx = math.parse(entrada);
-        const fx_str = fx.toString();
-        const derivada = math.derivative(entrada, 'x').toString();
+        // Paso 1: mostrar función original
+        out.innerHTML += `<div class="paso">1️⃣ Función: f(x) = <strong>${expr}</strong></div>`;
 
-        resultado.innerHTML += '<div class="paso">1️⃣ f(x) = <strong>' + fx_str + '</strong></div>';
-        resultado.innerHTML += '<div class="paso">2️⃣ Derivada: f\'(x) = <strong>' + derivada + '</strong> ✅</div>';
+        // Paso 2: obtener derivada (sin simplificar)
+        const derivNode = math.derivative(expr, 'x', { simplify: false });
+        const derivRaw = derivNode.toString();
+        out.innerHTML += `<div class="paso">2️⃣ Derivada (sin simplificar): <strong>${derivRaw}</strong></div>`;
 
-        // Preparar datos para gráfica
-        const f = math.compile(entrada);
-        const df = math.compile(derivada);
+        // Paso 3: derivada simplificada
+        const derivSimpl = math.simplify(derivNode);
+        const derivStr = derivSimpl.toString();
+        out.innerHTML += `<div class="paso">3️⃣ Derivada simplificada: f'(x) = <strong>${derivStr}</strong></div>`;
+
+        // Preparar datos para graficar
+        const f = math.compile(expr);
+        const df = math.compile(derivStr);
         const xs = math.range(-10, 10, 0.5).toArray();
         const ys = xs.map(x => f.evaluate({ x }));
         const dys = xs.map(x => df.evaluate({ x }));
 
+        // Graficar con Chart.js
         new Chart(ctx, {
           type: 'line',
           data: {
@@ -73,16 +80,9 @@
               y: { title: { display: true, text: 'y' } }
             },
             responsive: true,
-            plugins: {
-              legend: { position: 'top' }
-            }
+            plugins: { legend: { position: 'top' } }
           }
         });
 
       } catch (e) {
-        resultado.innerHTML = '<div class="paso error">❌ Error al interpretar la función. Asegúrate de usar solo <strong>x</strong> como variable y sintaxis válida.</div>';
-      }
-    }
-  </script>
-</body>
-</html>
+        out.innerHTML = `<div class="paso error">❌ Error interpret
