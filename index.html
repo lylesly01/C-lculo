@@ -82,3 +82,28 @@
         );
         const fxh_str = fxh.toString();
 
+        // Paso 3: f(x + h) - f(x)
+        const diferencia = math.simplify((${fxh_str}) - (${fx_str}));
+        const diferencia_str = diferencia.toString();
+
+        // Paso 4: (f(x + h) - f(x)) / h
+        const cociente = math.simplify((${diferencia_str}) / h);
+        const cociente_str = cociente.toString();
+
+        // Paso 5: Límite cuando h → 0
+        const derivada = math.derivative(entrada, 'x');
+
+        // Mostrar pasos
+        resultado.innerHTML += <div class="paso">1️⃣ Fórmula general:<br>f'(x) = lim₍ₕ→0₎ [f(x+h) - f(x)] / h</div>;
+        resultado.innerHTML += <div class="paso">2️⃣ f(x) = <strong>${fx_str}</strong></div>;
+        resultado.innerHTML += <div class="paso">3️⃣ f(x+h) = <strong>${fxh_str}</strong></div>;
+        resultado.innerHTML += <div class="paso">4️⃣ Diferencia: f(x+h) - f(x) = <strong>${diferencia_str}</strong></div>;
+        resultado.innerHTML += <div class="paso">5️⃣ Cociente: [f(x+h) - f(x)] / h = <strong>${cociente_str}</strong></div>;
+        resultado.innerHTML += <div class="paso">6️⃣ Derivada (límite cuando h→0): f'(x) = <strong>${derivada.toString()}</strong> ✅</div>;
+      } catch (e) {
+        resultado.innerHTML = <div class="paso error">❌ Error al interpretar la función. Asegúrate de usar solo <strong>x</strong> como variable y una sintaxis válida.</div>;
+      }
+    }
+  </script>
+</body>
+</html>
