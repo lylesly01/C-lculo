@@ -2,109 +2,50 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Derivadas paso a paso - Forma larga</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.1/math.min.js"></script>
+  <title>Derivada por Definición (Forma Larga)</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #eef2f3;
-      padding: 40px;
-    }
-    .contenedor {
-      background-color: #fff;
-      padding: 30px;
-      max-width: 800px;
-      margin: auto;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    h1 {
-      text-align: center;
-      color: #2c3e50;
-    }
-    input, button {
-      font-size: 18px;
-      padding: 10px;
-      margin: 10px 0;
-    }
-    input {
-      width: 70%;
-    }
-    button {
-      background-color: #3498db;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .paso {
-      background-color: #f0f4f8;
-      padding: 15px;
-      border-left: 5px solid #2980b9;
-      margin-top: 15px;
-      border-radius: 6px;
-    }
-    .error {
-      color: red;
-    }
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 2em auto; line-height: 1.6; }
+    .formula { font-family: "Times New Roman", serif; font-size: 1.2em; background: #f5f5f5; padding: 1em; border-radius: 4px; }
+    .paso { margin-bottom: 1.5em; }
+    code { background: #eee; padding: 0.2em 0.4em; border-radius: 3px; }
   </style>
 </head>
 <body>
-  <div class="contenedor">
-    <h1>Derivada por la definición</h1>
-    <p>Escribe la función <strong>f(x)</strong> (ej: <code>x^2 + 3x</code>):</p>
-    <input type="text" id="funcion" placeholder="Ejemplo: x^2 + 3x">
-    <button onclick="calcularDerivada()">Resolver</button>
-    <div id="resultado"></div>
+  <h1>Derivada por Definición: Explicación Detallada</h1>
+
+  <div class="paso">
+    <h2>1. Definición</h2>
+    <p>La derivada de <em>f</em>(x) está definida como:</p>
+    <div class="formula">
+      f′(x) = lim<sub>h→0</sub> [f(x + h) − f(x)] / h
+    </div>
   </div>
 
-  <script>
-    function calcularDerivada() {
-      const entrada = document.getElementById("funcion").value.trim();
-      const resultado = document.getElementById("resultado");
-      resultado.innerHTML = "";
+  <div class="paso">
+    <h2>2. Ejemplo: f(x) = x²</h2>
+    <p>Aplicamos la definición:</p>
+    <div class="formula">
+      ( (x + h)² − x² ) / h <br>
+      = (x² + 2xh + h² − x²) / h <br>
+      = (2xh + h²) / h <br>
+      = 2x + h → (al límite h→0) → <strong>2x</strong>
+    </div>
+    <p>Por lo tanto, <code>f′(x) = 2x</code>.</p>
+  </div>
 
-      if (!entrada) {
-        resultado.innerHTML = '<div class="paso error">⚠️ Ingresa una función válida.</div>';
-        return;
-      }
+  <div class="paso">
+    <h2>3. Estructura del proceso</h2>
+    <ul>
+      <li>Escribir el límite: <code>lim<sub>h→0</sub> [f(x + h) − f(x)] / h</code></li>
+      <li>Reemplazar <code>f(x + h)</code></li>
+      <li>Expandir y simplificar</li>
+      <li>Cancelar <code>h</code> y tomar el límite</li>
+      <li>Obtener la derivada</li>
+    </ul>
+  </div>
 
-      try {
-        // Paso 1: f(x)
-        const fx = math.parse(entrada);
-        const fx_str = fx.toString();
-
-        // Paso 2: f(x + h)
-        const fxh = fx.transform(node =>
-          node.isSymbolNode && node.name === "x"
-            ? math.parse("(x + h)")
-            : node
-        );
-        const fxh_str = fxh.toString();
-
-        // Paso 3: f(x + h) - f(x)
-        const diferencia = math.simplify((${fxh_str}) - (${fx_str}));
-        const diferencia_str = diferencia.toString();
-
-        // Paso 4: (f(x + h) - f(x)) / h
-        const cociente = math.simplify((${diferencia_str}) / h);
-        const cociente_str = cociente.toString();
-
-        // Paso 5: Límite cuando h → 0
-        const derivada = math.derivative(entrada, 'x');
-
-        // Mostrar pasos
-        resultado.innerHTML += <div class="paso">1️⃣ Fórmula general:<br>f'(x) = lim₍ₕ→0₎ [f(x+h) - f(x)] / h</div>;
-        resultado.innerHTML += <div class="paso">2️⃣ f(x) = <strong>${fx_str}</strong></div>;
-        resultado.innerHTML += <div class="paso">3️⃣ f(x+h) = <strong>${fxh_str}</strong></div>;
-        resultado.innerHTML += <div class="paso">4️⃣ Diferencia: f(x+h) - f(x) = <strong>${diferencia_str}</strong></div>;
-        resultado.innerHTML += <div class="paso">5️⃣ Cociente: [f(x+h) - f(x)] / h = <strong>${cociente_str}</strong></div>;
-        resultado.innerHTML += <div class="paso">6️⃣ Derivada (límite cuando h→0): f'(x) = <strong>${derivada.toString()}</strong> ✅</div>;
-      } catch (e) {
-        resultado.innerHTML = <div class="paso error">❌ Error al interpretar la función. Asegúrate de usar solo <strong>x</strong> como variable y una sintaxis válida.</div>;
-      }
-    }
-  </script>
+  <footer>
+    <p>Hecho con ❤️ por [Tu Nombre o Username]</p>
+  </footer>
 </body>
 </html>
-
