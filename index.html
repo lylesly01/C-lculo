@@ -19,37 +19,78 @@ const cociente = math.simplify(`${diferencia_str} / h`);
 const cociente_str = cociente.toString();
 
 // Paso 5: Límite cuando h → 0 (derivada simbólica)
-const derivada = math.derivative(entrada, "x").toString();
+const derivada_str = math.derivative(entrada, "x").toString();
 
-// Mostrar pasos utilizando **template literals** y **innerHTML**
+// Mostrando los pasos
 resultado.innerHTML += `
   <div class="paso">
     1️⃣ Fórmula general:<br>
     f'(x) = lim₍ₕ→0₎ [f(x+h) – f(x)] / h
   </div>
-`;
-resultado.innerHTML += `
   <div class="paso">
     2️⃣ f(x) = <strong>${fx_str}</strong>
   </div>
-`;
-resultado.innerHTML += `
   <div class="paso">
     3️⃣ f(x+h) = <strong>${fxh_str}</strong>
   </div>
-`;
-resultado.innerHTML += `
   <div class="paso">
     4️⃣ Diferencia: f(x+h) – f(x) = <strong>${diferencia_str}</strong>
   </div>
-`;
-resultado.innerHTML += `
   <div class="paso">
     5️⃣ Cociente: [f(x+h) – f(x)] / h = <strong>${cociente_str}</strong>
   </div>
-`;
-resultado.innerHTML += `
   <div class="paso">
-    6️⃣ Derivada (límite cuando h→0): f'(x) = <strong>${derivada}</strong> ✅
+    6️⃣ Derivada (límite cuando h→0): f'(x) = <strong>${derivada_str}</strong> ✅
   </div>
 `;
+
+// –––––––– Agregando la gráfica ––––––––
+
+// Compilando f(x) y f'(x)
+const f = math.compile(entrada);
+const df = math.compile(derivada_str);
+
+// Generando datos para el gráfico
+const xs = math.range(-10, 10, 0.5).toArray();
+const ys = xs.map(x => f.evaluate({ x }));
+const dys = xs.map(x => df.evaluate({ x }));
+
+// Incluye en tu HTML un <canvas> con id="grafica", y asegúrate de importar Chart.js:
+
+/*
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<canvas id="grafica"></canvas>
+*/
+
+// Inicializando el gráfico:
+const ctx = document.getElementById("grafica").getContext("2d");
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: xs,
+    datasets: [
+      {
+        label: 'f(x)',
+        data: ys,
+        borderColor: 'blue',
+        fill: false
+      },
+      {
+        label: "f'(x)",
+        data: dys,
+        borderColor: 'red',
+        fill: false
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'top' }
+    },
+    scales: {
+      x: { type: 'linear', title: { display: true, text: 'x' } },
+      y: { title: { display: true, text: 'y' } }
+    }
+  }
+});
