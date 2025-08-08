@@ -2,65 +2,23 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Derivadas paso a paso - Forma larga</title>
-  <meta charset="UTF-8" />
-  <title>Derivada por la Definición - Paso a paso</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.1/math.min.js"></script>
+  <title>Derivada por Definición</title>
   <style>
-    body {
-@@ -43,6 +43,7 @@
-      border-left: 5px solid #2980b9;
-      margin-top: 15px;
-      border-radius: 6px;
-      white-space: pre-wrap;
-    }
-    .error {
-      color: red;
-@@ -53,7 +54,7 @@
-  <div class="contenedor">
-    <h1>Derivada por la definición</h1>
-    <p>Escribe la función <strong>f(x)</strong> (ej: <code>x^2 + 3x</code>):</p>
-    <input type="text" id="funcion" placeholder="Ejemplo: x^2 + 3x">
-    <input type="text" id="funcion" placeholder="Ejemplo: x^2 + 3x" />
-    <button onclick="calcularDerivada()">Resolver</button>
-    <div id="resultado"></div>
+    body { font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; }
+    .formula { font-family: "Times New Roman", serif; font-size: 1.2em; margin: 20px 0; }
+    .explicacion { margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Derivada por Definición</h1>
+  <p class="explicacion">
+    La derivada de una función <em>f</em> en el punto <em>x</em> se define como el límite:
+  </p>
+  <div class="formula">
+    f&#8242;(x) = lim<sub>h→0</sub> [f(x + h) − f(x)] / h
   </div>
-@@ -83,25 +84,28 @@ <h1>Derivada por la definición</h1>
-        const fxh_str = fxh.toString();
-
-        // Paso 3: f(x + h) - f(x)
-        const diferencia = math.simplify((${fxh_str}) - (${fx_str}));
-        const diferenciaExpr = `(${fxh_str}) - (${fx_str})`;
-        const diferencia = math.simplify(diferenciaExpr);
-        const diferencia_str = diferencia.toString();
-
-        // Paso 4: (f(x + h) - f(x)) / h
-        const cociente = math.simplify((${diferencia_str}) / h);
-        const cocienteExpr = `(${diferencia_str}) / h`;
-        const cociente = math.simplify(cocienteExpr);
-        const cociente_str = cociente.toString();
-
-        // Paso 5: Límite cuando h → 0
-        // Paso 5: Derivada (usamos mathjs para resultado simbólico)
-        const derivada = math.derivative(entrada, 'x');
-
-        // Mostrar pasos
-        resultado.innerHTML += <div class="paso">1️⃣ Fórmula general:<br>f'(x) = lim₍ₕ→0₎ [f(x+h) - f(x)] / h</div>;
-        resultado.innerHTML += <div class="paso">2️⃣ f(x) = <strong>${fx_str}</strong></div>;
-        resultado.innerHTML += <div class="paso">3️⃣ f(x+h) = <strong>${fxh_str}</strong></div>;
-        resultado.innerHTML += <div class="paso">4️⃣ Diferencia: f(x+h) - f(x) = <strong>${diferencia_str}</strong></div>;
-        resultado.innerHTML += <div class="paso">5️⃣ Cociente: [f(x+h) - f(x)] / h = <strong>${cociente_str}</strong></div>;
-        resultado.innerHTML += <div class="paso">6️⃣ Derivada (límite cuando h→0): f'(x) = <strong>${derivada.toString()}</strong> ✅</div>;
-        resultado.innerHTML += `<div class="paso">1️⃣ Fórmula general:<br>f'(x) = lim₍ₕ→0₎ [f(x+h) - f(x)] / h</div>`;
-        resultado.innerHTML += `<div class="paso">2️⃣ f(x) = <strong>${fx_str}</strong></div>`;
-        resultado.innerHTML += `<div class="paso">3️⃣ f(x+h) = <strong>${fxh_str}</strong></div>`;
-        resultado.innerHTML += `<div class="paso">4️⃣ Diferencia: f(x+h) - f(x) = <strong>${diferencia_str}</strong></div>`;
-        resultado.innerHTML += `<div class="paso">5️⃣ Cociente: [f(x+h) - f(x)] / h = <strong>${cociente_str}</strong></div>`;
-        resultado.innerHTML += `<div class="paso">6️⃣ Derivada (resultado simbólico): f'(x) = <strong>${derivada.toString()}</strong> ✅</div>`;
-      } catch (e) {
-        resultado.innerHTML = <div class="paso error">❌ Error al interpretar la función. Asegúrate de usar solo <strong>x</strong> como variable y una sintaxis válida.</div>;
-        resultado.innerHTML = '<div class="paso error">❌ Error al interpretar la función. Asegúrate de usar solo <strong>x</strong> como variable y una sintaxis válida.</div>';
-        console.error(e);
-      }
-    }
-  </script>
+  <p class="explicacion">
+    Si este límite existe, decimos que <em>f</em> es derivable en <em>x</em> y el valor del límite es la pendiente de la tangente a la curva de <em>f</em> en ese punto.
+  </p>
+</body>
+</html>
