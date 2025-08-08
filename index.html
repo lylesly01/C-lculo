@@ -22,7 +22,7 @@
 </head>
 <body>
   <div class="contenedor">
-    <h1>Derivada por la definición + Gráfica</h1>
+    <h1>Derivada paso a paso + Gráfica</h1>
     <p>Escribe la función <strong>f(x)</strong> (ej: <code>x^2 + 3x</code>):</p>
     <input type="text" id="funcion" placeholder="Ejemplo: x^2 + 3x">
     <button onclick="calcularDerivada()">Resolver</button>
@@ -44,7 +44,7 @@
       }
 
       try {
-        // Mostrar los pasos del cálculo
+        // Mostrar pasos del cálculo
         resultado.innerHTML += '<div class="paso">1️⃣ Fórmula general:<br>f\'(x) = lim₍ₕ→0₎ [f(x+h) – f(x)] / h</div>';
 
         const fx = math.parse(expr);
@@ -66,14 +66,14 @@
         const deriv = math.derivative(expr, 'x').toString();
         resultado.innerHTML += `<div class="paso">6️⃣ Derivada (límite cuando h→0): f'(x) = <strong>${deriv}</strong> ✅</div>`;
 
-        // Generar datos para graficar
+        // Preparar datos para la gráfica
         const f = math.compile(expr);
         const df = math.compile(deriv);
         const xs = math.range(-10, 10, 0.5).toArray();
         const ys = xs.map(x => f.evaluate({ x }));
         const dys = xs.map(x => df.evaluate({ x }));
 
-        // Crear gráfica
+        // Crear línea con Chart.js
         new Chart(ctx, {
           type: 'line',
           data: {
@@ -84,12 +84,14 @@
             ]
           },
           options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' }
+            },
             scales: {
               x: { type: 'linear', title: { display: true, text: 'x' } },
               y: { title: { display: true, text: 'y' } }
-            },
-            responsive: true,
-            plugins: { legend: { position: 'top' } }
+            }
           }
         });
 
